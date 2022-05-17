@@ -1,4 +1,8 @@
 from .base import *
+# from spotcloud_test.utils.UploadData import uploadDataToDataBase
+#
+# # Upload Data from json
+# uploadDataToDataBase()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
