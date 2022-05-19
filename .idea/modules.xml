@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../backend_jamarinv/.idea/backend_jamarinv.iml" filepath="$PROJECT_DIR$/../backend_jamarinv/.idea/backend_jamarinv.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../coockie_admin/.idea/coockie_admin.iml" filepath="$PROJECT_DIR$/../coockie_admin/.idea/coockie_admin.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/spotcloud_test.iml" filepath="$PROJECT_DIR$/.idea/spotcloud_test.iml" />
     </modules>
   </component>
