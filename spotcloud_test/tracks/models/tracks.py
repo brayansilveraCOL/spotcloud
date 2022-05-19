@@ -26,7 +26,7 @@ class Tracks(BaseModel):
     id = models.PositiveIntegerField('Id Track', unique=True, primary_key=True)
     releaseDate = models.DateField('Release Date')
     kind = models.CharField('Kind Name', max_length=255, blank=True, null=True)
-    artistId = models.PositiveIntegerField('Artist Date', unique=True)
+    artistId = models.PositiveIntegerField('Artist Date')
     artistUrl = models.URLField("url Artist")
     contentAdvisoryRating = models.CharField('Content Advisors', max_length=255, blank=True, null=True)
     artworkUrl100 = models.URLField("Url Arts")

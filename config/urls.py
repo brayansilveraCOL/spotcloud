@@ -19,4 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(('spotcloud_test.users.api.urls', 'users'), namespace='users')),
+    path('', include(('spotcloud_test.tracks.api.urls', 'tracks'), namespace='tracks')),
 ]
