@@ -68,4 +68,4 @@ def uploadData(request):
 
         return Response(data={'upload': True}, status=status.HTTP_201_CREATED)
     except Exception as e:
-        return Response(data={'upload': False, 'message': e.args}, status=status.HTTP_201_CREATED)
+        return Response(data={'upload': False, 'message': e.args}, status=status.HTTP_400_BAD_REQUEST)
