@@ -1,6 +1,3 @@
-# Django imports
-import sqlite3
-
 from django.db import connection
 
 # Import Third Party Library
@@ -17,6 +14,9 @@ from spotcloud_test.tracks.api.serializers.tracks import TracksModelSerializer, 
 # Django Models
 from spotcloud_test.tracks.models.tracks import Tracks
 
+# Utils
+from spotcloud_test.utils.miscelanea import create_object
+
 
 class TrackViewSet(mixins.ListModelMixin,
                    mixins.DestroyModelMixin,
@@ -27,10 +27,10 @@ class TrackViewSet(mixins.ListModelMixin,
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['name', 'id', 'kind', 'contentAdvisoryRating']
 
-    # def get_permissions(self):
-    #     """Assign permissions based on action."""
-    #     permissions = [IsAuthenticated]
-    #     return [permission() for permission in permissions]
+    def get_permissions(self):
+        """Assign permissions based on action."""
+        permissions = [IsAuthenticated]
+        return [permission() for permission in permissions]
 
     def perform_destroy(self, instance):
         """Disable State."""
@@ -78,4 +78,50 @@ class TrackViewSet(mixins.ListModelMixin,
             serializer.save()
             return Response(data={'message': 'created'}, status=status.HTTP_201_CREATED)
         else:
-            return Response(data={'message': 'failed'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={'message': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'])
+    def group_track_for_genre(self, request):
+        cursor = connection.cursor()
+        cursor.execute('''SELECT * FROM tracks_tracks_genres''')
+        all_genres_with_id_track = cursor.fetchall()
+        columnNames = list(map(lambda x: x[0], cursor.description))
+        keys = []
+        inventory_of_lambdas = []
+        for related in all_genres_with_id_track:
+            related = list(related)
+            response = dict(zip(columnNames, related))
+            cursor.execute("SELECT * FROM tracks_tracks where id = {}".format(response.get('tracks_id')))
+            tracks = cursor.fetchone()
+            columnNamesTrack = list(map(lambda x: x[0], cursor.description))
+            if tracks:
+                tracks = list(tracks)
+                dict_from_list = dict(zip(columnNamesTrack, tracks))
+                inventory_of_lambdas.append({response.get('genres_id'): dict_from_list})
+
+        for data in inventory_of_lambdas:
+            key = list(data.keys())
+            keys.append(key[0])
+
+        object_referent = create_object(keys)
+
+        for data in inventory_of_lambdas:
+            key = list(data.keys())
+            if key[0] in object_referent:
+                object_referent[key[0]].append(data[key[0]])
+
+        cursor.execute('''SELECT * FROM tracks_genres''')
+        genres = cursor.fetchall()
+        columnNamesGenres = list(map(lambda x: x[0], cursor.description))
+        list_genres = []
+        for genres_obj in genres:
+            genres = list(genres_obj)
+            dict_genres = dict(zip(columnNamesGenres, genres))
+            list_genres.append(dict_genres)
+
+        final_object_group = {list_genres['name']: list(object_referent.get(list_genres['id']))
+                              for list_genres in list_genres if
+                              list_genres['id'] in object_referent.keys()
+                              }
+
+        return Response(data={'data': final_object_group}, status=status.HTTP_201_CREATED)
